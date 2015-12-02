@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <updates>
 	<update>
-		<name>plg_cntools_lazyload</name>
+		<name>PLG_CNTOOLS_LAZYLOAD</name>
 		<description></description>
-		<element>plg_cntools_lazyload</element>
+		<element>PLG_CNTOOLS_LAZYLOAD</element>
 		<type>plugin</type>
-		<version>0.0.1</version>
+		<version>0.0.2</version>
 		<folder>system</folder>
 		<client_id>0</client_id>
 		<client>0</client>
@@ -17,7 +17,7 @@
 			<downloadurl type="full" format="zip">https://github.com/cn-tools/plg_cntools_lazyload/archive/master.zip</downloadurl>
 		</downloads>
 		<targetplatform name="joomla" version="3.*"/>
-		<maintainer>CN-Tools</maintainer>
+		<maintainer>CN-Tools | Clemens Neubauer</maintainer>
 		<maintainerurl>https://github.com/cn-tools</maintainerurl>
 	</update>
 </updates>

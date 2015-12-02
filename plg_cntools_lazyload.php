@@ -29,7 +29,7 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 	{
 		parent::__construct( $subject, $config );
 		$this->_ImagesCount = 0;
-		$this->_ClassPraefix = 'JPLGCNTLL';
+		$this->_ClassPraefix = 'jplgcntll';
 		$this->_BaseUrl = JURI::base();
 		
 		//-- build placeholder string ---------------------------------
@@ -40,8 +40,8 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 			$lFileName = 'plugins/system/plg_cntools_lazyload/assets/images/' . $this->params->get('placeholder', 'transparent.gif');
 			if (file_exists($lFileName))
 			{
-				$this->_Placeholder1 = ' src=\'' . $this->_BaseUrl . $lFileName . '\'';
-				$this->_Placeholder2 = ' src="' . $this->_BaseUrl . $lFileName . '"';
+				$this->_Placeholder1 = 'src=\'' . $this->_BaseUrl . $lFileName . '\'';
+				$this->_Placeholder2 = 'src="' . $this->_BaseUrl . $lFileName . '"';
 			}
 		}
 	}
@@ -57,18 +57,28 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 		
 		//-- find all to use  images --------------------------------------
 		$lFullDocument = JResponse::getBody();
-		if ($this->params->get('container', '') != '')
-		{
+		if ($this->params->get('container')){
+			$lContainers = array_map('trim', explode("\n", $this->params->get('container')));
+			
 			include_once('plugins/system/plg_cntools_lazyload/assets/simple_html_dom.php');
 			$lWorkDoc = new simple_html_dom();
 			$lWorkDoc->load($lFullDocument);
-			$lWorkHtmlText = $lWorkDoc->getElementById($this->params->get('container', ''))->innertext;
-			if (!empty($lWorkHtmlText))
+			
+			foreach ($lContainers as $lID)
 			{
-				$lReworkedHtmlText = $this->renderHTML($lWorkHtmlText);
-				$lWorkDoc->getElementById($this->params->get('container', ''))->innertext = $lReworkedHtmlText;
+				$lWorkHtmlText = $lWorkDoc->getElementById($lID)->innertext;
+				if (!empty($lWorkHtmlText))
+				{
+					$lReworkedHtmlText = $this->renderHTML($lWorkHtmlText);
+					$lWorkDoc->getElementById($lID)->innertext = $lReworkedHtmlText;
+				}
+			}
+			
+			if ($this->_ImagesCount >= 1)
+			{
 				$lFullDocument = $lWorkDoc->outertext;
 			}
+			
 			unset($lWorkDoc);
 		}
 		else
@@ -86,6 +96,11 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 				$lScript .= '<noscript><style>.' . $this->_ClassPraefix . '{ display: none !important; }</style></noscript>';
 			}
 
+			//-- add jQuery javascript file if needed -------------------------
+			if ($this->params->get('jquery', '') != '')
+			{
+				$lScript .= '<script src="' . $this->_BaseUrl . 'plugins/system/plg_cntools_lazyload/assets/jquery/' . $this->params->get('jquery') . '" type="text/javascript"></script>';
+			}
 			//-- add JS file and jQuery execute part --------------------------
 			$lScript .= '<script src="' . $this->_BaseUrl . 'plugins/system/plg_cntools_lazyload/assets/js/' . $this->params->get('jsfile') . '" type="text/javascript"></script>';
 			$lScript .= '<script type="text/javascript">jQuery(function($){ $("img.' . $this->_ClassPraefix . '").lazyload({' . $this->getLazyLoadOptions() . '}) });</script>';
@@ -106,7 +121,7 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 		{
 			$lOptions = $this->addJSOption($lOptions, 'threshold: ' . $this->params->get('threshold', '') . '');
 		}
-		if ($this->params->get('effect', '') != '')
+		if ($this->params->get('effect', '0') != '0')
 		{
 			$lOptions = $this->addJSOption($lOptions, 'effect: "' . $this->params->get('effect', '') . '"');
 		}
@@ -116,7 +131,7 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 			$lOptions = $this->addJSOption($lOptions, 'container: $("#' . $this->params->get('container', '') . '")');
 		}
 */
-		if ($this->params->get('event', '') != '')
+		if ($this->params->get('event', '0') != '0')
 		{
 			$lOptions = $this->addJSOption($lOptions, 'event: "' . $this->params->get('event', '') . '"');
 		}
@@ -144,21 +159,21 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 		$lResult = $matches[0];
 		
 		$lDoRender = true;
-/*
+
 		//-- check images if it should be used by class -----------------------
-		if ($this->params->get('inexcss') != '0')
+		if ($this->params->get('inexlazy', '0') != '0')
 		{
-			$image_class = $this->params->get('inexlazycss', '');
+			$image_class = $this->params->get('inexcss', '');
 			if ($image_class != '')
 			{
-				if ($this->params->get('inexcss', '') == '1')
+				if ($this->params->get('inexlazy', '0') == '1')
 				{ // only use images with specific class param
 					if(!preg_match('@class=[\"\'].*'.$image_class.'.*[\"\']@Ui', $lResult))
 					{
 						$lDoRender = false;
 					}
 				}
-				elseif ($this->params->get('inexcss', '') == '0')
+				elseif ($this->params->get('inexlazy', '0') == '2')
 				{ // ignore images with specific class param
 					if(preg_match('@class=[\"\'].*'.$image_class.'.*[\"\']@Ui', $lResult))
 					{
@@ -167,7 +182,7 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 				}
 			}
 		}
-*/
+
 		if ($lDoRender)
 		{
 			$lImageSrc = '';
@@ -175,16 +190,16 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 			list($lWorkString, $lImageSrc) = $this->reworkSrc($lResult);
 			
 			//-- check images if it should be used by image size --------------
-			if ((!empty($lImageSrc)) and ($this->params->get('imagesize')) and file_exists($lImageSrc))
+			if ((!empty($lImageSrc)) and ($this->params->get('imagesize') >= 1) and file_exists($lImageSrc))
 			{
 				list($width, $height) = getimagesize($lImageSrc);
 				if (isset($width) or isset($height))
 				{
-					if (($width >= 1) and ($width >= $this->params->get('imagesize')))
+					if (($width >= 1) and ($width >> $this->params->get('imagesize')))
 					{
 						//do nothing
 					}
-					elseif (($height >= 1) and ($height >= $this->params->get('imagesize')))
+					elseif (($height >= 1) and ($height >> $this->params->get('imagesize')))
 					{
 						// do nothing
 					}
@@ -213,15 +228,15 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 	protected function reworkSrc($htmlcode)
 	{
 		$imageUrl = '';
-		if (stripos($htmlcode, ' src="'))
+		if (stripos($htmlcode, 'src="'))
 		{
 			$imageUrl = $this->getSrc($htmlcode, '"');
-			$htmlcode = str_ireplace(' src="', '' . $this->_Placeholder2 . ' data-original="', $htmlcode);
+			$htmlcode = str_ireplace('src="', '' . $this->_Placeholder2 . ' data-original="', $htmlcode);
 		}
-		elseif (stripos($htmlcode, ' src=\''))
+		elseif (stripos($htmlcode, 'src=\''))
 		{
 			$imageUrl = $this->getSrc($htmlcode, '\'');
-			$htmlcode = str_ireplace(' src=\'', '' . $this->_Placeholder1 . ' data-original=\'', $htmlcode);
+			$htmlcode = str_ireplace('src=\'', '' . $this->_Placeholder1 . ' data-original=\'', $htmlcode);
 		}
 		
 		return array($htmlcode, $imageUrl);
@@ -242,26 +257,26 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 	//-- change class option --------------------------------------------------
 	protected function reworkClass($htmlcode)
 	{
-		if (stripos($htmlcode, ' data-original="'))
+		if (stripos($htmlcode, 'data-original="'))
 		{
-			if (stripos($htmlcode, ' class='))
+			if (stripos($htmlcode, 'class='))
 			{
-				$htmlcode = str_ireplace(' class="', ' class="' . $this->_ClassPraefix . ' ', $htmlcode);
+				$htmlcode = str_ireplace('class="', 'class="' . $this->_ClassPraefix . ' ', $htmlcode);
 			}
 			else 
 			{
-				$htmlcode = str_ireplace(' data-original=', ' class="' . $this->_ClassPraefix . '" data-original=', $htmlcode);
+				$htmlcode = str_ireplace('data-original=', 'class="' . $this->_ClassPraefix . '" data-original=', $htmlcode);
 			}
 		}
-		elseif (stripos($htmlcode, ' data-original=\''))
+		elseif (stripos($htmlcode, 'data-original=\''))
 		{
-			if (stripos($htmlcode, ' class='))
+			if (stripos($htmlcode, 'class='))
 			{
-				$htmlcode = str_ireplace(' class=\'', ' class=\'' . $this->_ClassPraefix . ' ', $htmlcode);
+				$htmlcode = str_ireplace('class=\'', 'class=\'' . $this->_ClassPraefix . ' ', $htmlcode);
 			}
 			else 
 			{
-				$htmlcode = str_ireplace(' data-original=', ' class=\'' . $this->_ClassPraefix . '\' data-original=', $htmlcode);
+				$htmlcode = str_ireplace('data-original=', 'class=\'' . $this->_ClassPraefix . '\' data-original=', $htmlcode);
 			}
 		}
 		return $htmlcode;

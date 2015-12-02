@@ -1,3 +1,2 @@
 # plg_cntools_lazyload
-
-LazyLoad Joomla! plug in based on http://www.appelsiini.net/projects/lazyload
+<p>LazyLoad is a simple and easy to use Joomla! Plug-in, which reduces the data transfer, because images to be displayed are loaded only when they actually get into the visible range. This plug-in use then jQuery add on from <a href="http://www.appelsiini.net/projects/lazyload" target="_blank">Mika Tuupola</a>.<br>This plug-in is FREEWARE and is "As-Like-It-Is" provided.</p><p><strong style="color:#F00;">Use at your own risk and the manufacturer accepts no liability for any damages of any kind!</strong></p><p>If you like this plug-in, I would be delighted if you would buy me a drink ...</p><p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=X6FSFKXJ868QG" target="_blank"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG_global.gif" alt="PayPal – The safer, easier way to pay online." /></a></p>
