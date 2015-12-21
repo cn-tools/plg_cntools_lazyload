@@ -35,7 +35,7 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 		//-- build placeholder string ---------------------------------
 		$this->_Placeholder1 = '';
 		$this->_Placeholder2 = '';
-		if ($this->params->get('placeholder'))
+		if ($this->params->get('placeholder', '-1') != '-1')
 		{
 			$lFileName = 'plugins/system/plg_cntools_lazyload/assets/images/' . $this->params->get('placeholder', 'transparent.gif');
 			if (file_exists($lFileName))
@@ -97,7 +97,7 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 			}
 
 			//-- add jQuery javascript file if needed -------------------------
-			if ($this->params->get('jquery', '') != '')
+			if ($this->params->get('jquery', '-1') != '-1')
 			{
 				$lScript .= '<script src="' . $this->_BaseUrl . 'plugins/system/plg_cntools_lazyload/assets/jquery/' . $this->params->get('jquery') . '" type="text/javascript"></script>';
 			}

@@ -5,7 +5,7 @@
 		<description></description>
 		<element>PLG_CNTOOLS_LAZYLOAD</element>
 		<type>plugin</type>
-		<version>0.0.2</version>
+		<version>0.0.3</version>
 		<folder>system</folder>
 		<client_id>0</client_id>
 		<client>0</client>
