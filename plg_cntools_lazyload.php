@@ -60,7 +60,9 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 		if ($this->params->get('container')){
 			$lContainers = array_map('trim', explode("\n", $this->params->get('container')));
 			
-			include_once('plugins/system/plg_cntools_lazyload/assets/simple_html_dom.php');
+			{
+				include_once('plugins/system/plg_cntools_lazyload/assets/simple_html_dom.php');
+			}
 			$lWorkDoc = new simple_html_dom();
 			$lWorkDoc->load($lFullDocument);
 			
@@ -79,6 +81,7 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 				$lFullDocument = $lWorkDoc->outertext;
 			}
 			
+			$lWorkDoc->Clear();
 			unset($lWorkDoc);
 		}
 		else
