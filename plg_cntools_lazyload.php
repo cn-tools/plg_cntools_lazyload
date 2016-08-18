@@ -60,6 +60,7 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 		if ($this->params->get('container')){
 			$lContainers = array_map('trim', explode("\n", $this->params->get('container')));
 			
+			if (!class_exists('simple_html_dom', false/*$autoload*/))
 			{
 				include_once('plugins/system/plg_cntools_lazyload/assets/simple_html_dom.php');
 			}
