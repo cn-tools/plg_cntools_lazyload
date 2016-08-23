@@ -18,6 +18,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 {
+	var $_useLazyLoad;
 	var $_ImagesCount;
 	var $_ClassPraefix;
 	var $_Placeholder1;
@@ -28,6 +29,7 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 	public function PlgSystemPlg_CNTools_LazyLoad( &$subject, $config )
 	{
 		parent::__construct( $subject, $config );
+		$this->_useLazyLoad = 1;
 		$this->_ImagesCount = 0;
 		$this->_ClassPraefix = 'jplgcntll';
 		$this->_BaseUrl = JURI::base();
@@ -46,11 +48,19 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 		}
 	}
 	
+	//-- onContentPrepare -----------------------------------------------------
+	function onContentPrepare($context, &$article, &$params, $page = 0){
+		if (substr($context, 0 , strlen('com_jem')) == 'com_jem')
+		{
+			$this->_useLazyLoad = 0;
+		}
+	}
+
 	//-- onAfterRender --------------------------------------------------------
 	public function onAfterRender ()
 	{
 		$app = JFactory::getApplication();
-		if($app->isAdmin() === true)
+		if (($app->isAdmin() === true) or ($this->_useLazyLoad == 0))
 		{
 			return;
 		}
