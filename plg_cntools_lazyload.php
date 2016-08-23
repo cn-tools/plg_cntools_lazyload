@@ -59,31 +59,39 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 		$lFullDocument = JResponse::getBody();
 		if ($this->params->get('container')){
 			$lContainers = array_map('trim', explode("\n", $this->params->get('container')));
-			
-			if (!class_exists('simple_html_dom', false/*$autoload*/))
+
+			if (!class_exists('JSLikeHTMLElement', false)) //autoload=false
 			{
-				include_once('plugins/system/plg_cntools_lazyload/assets/simple_html_dom.php');
+				include_once('plugins/system/plg_cntools_lazyload/assets/JSLikeHTMLElement.php');
 			}
-			$lWorkDoc = new simple_html_dom();
-			$lWorkDoc->load($lFullDocument);
+
+			libxml_use_internal_errors(true);
+			$lWorkDoc = new \DomDocument('1.0', 'UTF-8');
+			$lWorkDoc->registerNodeClass('DOMElement', 'JSLikeHTMLElement'); 
+			$lWorkDoc->loadHTML($lFullDocument);
 			
 			foreach ($lContainers as $lID)
 			{
-				$lWorkHtmlText = $lWorkDoc->getElementById($lID)->innertext;
-				if (!empty($lWorkHtmlText))
+				$lNode = $lWorkDoc->getElementById($lID);
+				if (isset($lNode))
 				{
-					$lReworkedHtmlText = $this->renderHTML($lWorkHtmlText);
-					$lWorkDoc->getElementById($lID)->innertext = $lReworkedHtmlText;
+					$lWorkHtmlText = $lNode->innerHTML;
+					if (!empty($lWorkHtmlText))
+					{
+						$lReworkedHtmlText = $this->renderHTML($lWorkHtmlText);
+						$lNode->innerHTML = $lReworkedHtmlText;
+					}
 				}
 			}
-			
+
 			if ($this->_ImagesCount >= 1)
 			{
-				$lFullDocument = $lWorkDoc->outertext;
+				$lFullDocument = $lWorkDoc->saveHTML();
 			}
-			
-			$lWorkDoc->Clear();
+
 			unset($lWorkDoc);
+			libxml_clear_errors();
+			libxml_use_internal_errors();
 		}
 		else
 		{
@@ -106,7 +114,13 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 				$lScript .= '<script src="' . $this->_BaseUrl . 'plugins/system/plg_cntools_lazyload/assets/jquery/' . $this->params->get('jquery') . '" type="text/javascript"></script>';
 			}
 			//-- add JS file and jQuery execute part --------------------------
-			$lScript .= '<script src="' . $this->_BaseUrl . 'plugins/system/plg_cntools_lazyload/assets/js/' . $this->params->get('jsfile') . '" type="text/javascript"></script>';
+			$lScript .= '<script src="' . $this->_BaseUrl . 'plugins/system/plg_cntools_lazyload/assets/js/lazyload/' . $this->params->get('jsfile') . '?v=1.9.7" type="text/javascript"></script>';
+
+			if ($this->params->get('event', '0') == 'scrollstop')
+			{
+				$lScript .= '<script src="' . $this->_BaseUrl . 'plugins/system/plg_cntools_lazyload/assets/js/scrollstop/' . $this->params->get('ssfile') . '?v=unknown1" type="text/javascript"></script>';
+			}
+			
 			$lScript .= '<script type="text/javascript">jQuery(function($){ $("img.' . $this->_ClassPraefix . '").lazyload({' . $this->getLazyLoadOptions() . '}) });</script>';
 
 			$lFullDocument = str_ireplace('</head>', $lScript.'</head>', $lFullDocument);
@@ -116,7 +130,7 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 
 		return true;
 	}
-	
+
 	//-- get options for LazyLoad javascript section --------------------------
 	protected function getLazyLoadOptions()
 	{
@@ -129,7 +143,7 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 		{
 			$lOptions = $this->addJSOption($lOptions, 'effect: "' . $this->params->get('effect', '') . '"');
 		}
-/*
+/* no multi containers supported
 		if ($this->params->get('container', '') != '')
 		{
 			$lOptions = $this->addJSOption($lOptions, 'container: $("#' . $this->params->get('container', '') . '")');
@@ -194,7 +208,7 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 			list($lWorkString, $lImageSrc) = $this->reworkSrc($lResult);
 			
 			//-- check images if it should be used by image size --------------
-			if ((!empty($lImageSrc)) and ($this->params->get('imagesize') >= 1) and file_exists($lImageSrc))
+			if ((!empty($lImageSrc)) and ($this->params->get('imagesize') >= 1) and function_exists('getimagesize') and file_exists($lImageSrc))
 			{
 				list($width, $height) = getimagesize($lImageSrc);
 				if (isset($width) or isset($height))

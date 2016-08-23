@@ -7,7 +7,7 @@
 	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
 	<authorEmail>cn-tools@gmx.at</authorEmail>
 	<authorUrl>https://github.com/cn-tools/</authorUrl>
-	<version>0.0.4</version>
+	<version>0.0.5</version>
 
 	<description>PLG_CNTOOLS_LAZYLOAD_DESC</description>
 
@@ -31,7 +31,7 @@
 	<config>
 		<fields name="params">
 			<fieldset name="basic">
-				<field name="jsfile" type="filelist" hide_none="1" default="jquery.lazyload.min.js" label="PLG_CNTOOL_LAZYLOAD_JS" directory="plugins/system/plg_cntools_lazyload/assets/js" filter="js" />
+				<field name="jsfile" type="filelist" hide_none="1" default="jquery.lazyload.min.js" label="PLG_CNTOOL_LAZYLOAD_JS" directory="plugins/system/plg_cntools_lazyload/assets/js/lazyload" filter="js" />
 
 				<field name="placeholder" type="filelist" hide_none="0" hide_default="0" default="transparent.gif" label="PLG_CNTOOL_LAZYLOAD_PLACEHOLDER" directory="plugins/system/plg_cntools_lazyload/assets/images" filter="gif" />
 
@@ -51,11 +51,13 @@
 					<option value="fadeIn">PLG_CNTOOL_LAZYLOAD_EFFECT_FADEIN</option>
 				</field>
 
-				<field name="event" type="radio" default="0" class="btn-group btn-group-yesno" label="PLG_CNTOOL_LAZYLOAD_EVENT" description="PLG_CNTOOL_LAZYLOAD_EVENT_DESC">
+				<field name="event" type="radio" default="scrollstop" class="btn-group btn-group-yesno" label="PLG_CNTOOL_LAZYLOAD_EVENT" description="PLG_CNTOOL_LAZYLOAD_EVENT_DESC">
 					<option value="0">JNO</option>
 					<option value="click">PLG_CNTOOL_LAZYLOAD_EVENT_ONCLICK</option>
 					<option value="mouseover">PLG_CNTOOL_LAZYLOAD_EVENT_MOUSEOVER</option>
+					<option value="scrollstop">PLG_CNTOOL_LAZYLOAD_EVENT_SCROLLSTOP</option>
 				</field>
+				<field name="ssfile" type="filelist" showon="event:scrollstop" hide_none="1" hide_default="0" default="jquery.scrollstop.min.js" label="PLG_CNTOOL_LAZYLOAD_SCROLLSTOP" description="PLG_CNTOOL_LAZYLOAD_SCROLLSTOP_DESC" directory="plugins/system/plg_cntools_lazyload/assets/js/scrollstop" filter="js" />
 
                 <field name="imagesize" type="text" default="" size="5" label="PLG_CNTOOL_LAZYLOAD_IMAGESIZE" description="PLG_CNTOOL_LAZYLOAD_IMAGESIZE_DESC" />
 
