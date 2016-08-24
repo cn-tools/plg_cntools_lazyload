@@ -18,7 +18,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 {
-	var $_useLazyLoad;
+	var $_useLazyLoadNot;
+	var $_useLazyLoadYes;
 	var $_ImagesCount;
 	var $_ClassPraefix;
 	var $_Placeholder1;
@@ -29,7 +30,8 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 	public function PlgSystemPlg_CNTools_LazyLoad( &$subject, $config )
 	{
 		parent::__construct( $subject, $config );
-		$this->_useLazyLoad = 1;
+		$this->_useLazyLoadNot = 0;
+		$this->_useLazyLoadYes = 0;
 		$this->_ImagesCount = 0;
 		$this->_ClassPraefix = 'jplgcntll';
 		$this->_BaseUrl = JURI::base();
@@ -50,9 +52,11 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 	
 	//-- onContentPrepare -----------------------------------------------------
 	function onContentPrepare($context, &$article, &$params, $page = 0){
-		if (substr($context, 0 , strlen('com_jem')) == 'com_jem')
+		if ($this->checkContext($context))
 		{
-			$this->_useLazyLoad = 0;
+			$this->_useLazyLoadYes++;
+		} else {
+			$this->_useLazyLoadNot++;
 		}
 	}
 
@@ -60,12 +64,22 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 	public function onAfterRender ()
 	{
 		$app = JFactory::getApplication();
-		if (($app->isAdmin() === true) or ($this->_useLazyLoad == 0))
+		if ($app->isAdmin() === true)
 		{
 			return;
 		}
 		
-		//-- find all to use  images --------------------------------------
+		//-- check include/exclude section of context -------------------------
+		if ($this->_useLazyLoadNot >= 1)
+		{
+			return;
+		}
+		if ($this->_useLazyLoadYes == 0)
+		{
+			return;
+		}
+		
+		//-- find all to use  images ------------------------------------------
 		$lFullDocument = JResponse::getBody();
 		if ($this->params->get('container')){
 			$lContainers = array_map('trim', explode("\n", $this->params->get('container')));
@@ -319,6 +333,39 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 		}
 		
 		return $htmlcode;
+	}
+
+	//-- checkContext ---------------------------------------------------------
+	protected function checkContext($context)
+	{
+		$lResult = true;
+		if ($this->params->get('contextyesno', '0') == '1')
+		{
+			//-- include part ---------------------------------------------
+			$lResult = $this->isContextFound($context);
+		}
+		elseif ($this->params->get('contextyesno', '0') == '2') 
+		{
+			//-- exclude part ---------------------------------------------
+			$lResult = !$this->isContextFound($context);
+		}
+		
+		return $lResult;
+	}
+
+	//-- isContextFound -------------------------------------------------------
+	protected function isContextFound($context)
+	{
+		$lValues = array_map('trim', explode("\n", $this->params->get('context')));
+
+		foreach ($lValues as $lValue){
+			//-- check if lValue is in context --------------------------------
+			if (stripos($context, $lValue) !== false) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
 ?>

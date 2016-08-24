@@ -7,7 +7,7 @@
 	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
 	<authorEmail>cn-tools@gmx.at</authorEmail>
 	<authorUrl>https://github.com/cn-tools/</authorUrl>
-	<version>0.0.6</version>
+	<version>0.0.7</version>
 
 	<description>PLG_CNTOOLS_LAZYLOAD_DESC</description>
 
@@ -28,6 +28,8 @@
 		<server type="extension" priority="1" name="plg_cntools_lazyload Updates">https://raw.githubusercontent.com/cn-tools/plg_cntools_lazyload/master/updateversion.xml</server>
 	</updateservers>
 
+	<scriptfile>script.plg_cntools_lazyload.php</scriptfile>
+
 	<config>
 		<fields name="params">
 			<fieldset name="basic">
@@ -40,7 +42,9 @@
 					<option value="1">PLG_CNTOOLS_LAZYLOAD_INEXLAZY_INCLUDE</option>
 					<option value="2">PLG_CNTOOLS_LAZYLOAD_INEXLAZY_EXCLUDE</option>
 				</field>
-                <field name="inexcss" type="text" default="" size="5" label="PLG_CNTOOLS_LAZYLOAD_INEXCSS" description="PLG_CNTOOLS_LAZYLOAD_INEXCSS_DESC" />
+				<field name="basic_inexlazy_notea1" showon="inexlazy:1" type="note" description="PLG_CNTOOLS_LAZYLOAD_INEXLAZY_HELP_INCLUDE" />
+				<field name="basic_inexlazy_notea2" showon="inexlazy:2" type="note" description="PLG_CNTOOLS_LAZYLOAD_INEXLAZY_HELP_EXCLUDE" />
+                <field name="inexcss" type="text" showon="inexlazy:1,2" default="" size="5" label="PLG_CNTOOLS_LAZYLOAD_INEXCSS" description="PLG_CNTOOLS_LAZYLOAD_INEXCSS_DESC" />
 
                 <field name="container" type="textarea" default="" label="PLG_CNTOOL_LAZYLOAD_CONTAINER" description="PLG_CNTOOL_LAZYLOAD_CONTAINER_DESC" rows="10" cols="5" filter="raw"/>
 
@@ -69,6 +73,17 @@
 				<field name="jquery" type="filelist" hide_none="0" hide_default="1" default="" label="PLG_CNTOOL_LAZYLOAD_JQUERY" directory="plugins/system/plg_cntools_lazyload/assets/jquery" filter="js" />
 
 				<field name="basic_hiddenlast" type="hidden" default="" />
+			</fieldset>
+			<fieldset name="additional" label="PLG_CNTOOLS_LAZYLOAD_ADDITIONAL_LABEL">
+				<field name="contextyesno" type="radio" default="0" class="btn-group btn-group-yesno" label="PLG_CNTOOL_LAZYLOAD_CONTEXTYESNO" description="PLG_CNTOOL_LAZYLOAD_CONTEXTYESNO_DESC">
+					<option value="0">PLG_CNTOOL_LAZYLOAD_CONTEXTYESNO_NOTHING</option>
+					<option value="1">PLG_CNTOOL_LAZYLOAD_CONTEXTYESNO_INCLUDE</option>
+					<option value="2">PLG_CNTOOL_LAZYLOAD_CONTEXTYESNO_EXCLUDE</option>
+				</field>
+
+				<field name="context" type="textarea" showon="contextyesno:1,2" default="" label="PLG_CNTOOL_LAZYLOAD_CONTEXT" description="PLG_CNTOOL_LAZYLOAD_CONTEXT_DESC" rows="10" cols="5" filter="raw"/>
+
+				<field name="additionalhiddenlast" type="hidden" default="" />
 			</fieldset>
 		</fields>
 	</config>
