@@ -91,6 +91,7 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 
 			libxml_use_internal_errors(true);
 			$lWorkDoc = new \DomDocument('1.0', 'UTF-8');
+			$lWorkDoc->formatOutput = true;
 			$lWorkDoc->registerNodeClass('DOMElement', 'JSLikeHTMLElement'); 
 			$lWorkDoc->loadHTML($lFullDocument);
 			
