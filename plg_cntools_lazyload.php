@@ -27,7 +27,7 @@ class PlgSystemPlg_CNTools_LazyLoad extends JPlugin
 	var $_BaseUrl;
 	
 	//-- constructor ----------------------------------------------------------
-	public function PlgSystemPlg_CNTools_LazyLoad( &$subject, $config )
+	public function __construct(&$subject, $config)
 	{
 		parent::__construct( $subject, $config );
 		$this->_useLazyLoadNot = 0;
